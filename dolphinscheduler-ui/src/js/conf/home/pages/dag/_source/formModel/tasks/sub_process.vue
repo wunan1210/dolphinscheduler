@@ -38,12 +38,25 @@
         </div>
       </div>
     </div>
+    <m-list-box>
+      <div slot="text">{{$t('Custom Parameters')}}</div>
+      <div slot="content">
+        <m-local-params
+          ref="refLocalParams"
+          @on-local-params="_onLocalParams"
+          :udp-list="localParams"
+          :hide="true">
+        </m-local-params>
+      </div>
+    </m-list-box>
   </div>
 </template>
 <script>
   import _ from 'lodash'
   import i18n from '@/module/i18n'
   import disabledState from '@/module/mixin/disabledState'
+  import mListBox from './_source/listBox'
+  import mLocalParams from './_source/localParams'
 
   export default {
     name: 'sub_process',
@@ -51,6 +64,8 @@
       return {
         // Process definition(List)
         processDefinitionList: [],
+        // Custom parameter
+        localParams: [],
         // Process definition
         wdiCurr: null
       }
@@ -69,7 +84,8 @@
           return false
         }
         this.$emit('on-params', {
-          processDefinitionId: this.wdiCurr
+          processDefinitionId: this.wdiCurr,
+          localParams: this.localParams
         })
         return true
       },
@@ -78,6 +94,12 @@
        */
       _handleWdiChanged (o) {
         this.$emit('on-set-process-name', this._handleName(o.value))
+      },
+      /**
+       * return localParams
+       */
+      _onLocalParams (a) {
+        this.localParams = a
       },
       /**
        * Return the name according to the process definition id
@@ -96,7 +118,7 @@
     created () {
       let processListS = _.cloneDeep(this.store.state.dag.processListS)
       let id = null
-      if(this.router.history.current.name==='projects-instance-details') {
+      if (this.router.history.current.name === 'projects-instance-details') {
         id = this.router.history.current.query.id || null
       } else {
         id = this.router.history.current.params.id || null
@@ -106,6 +128,7 @@
           return {
             id: v.id,
             code: v.name,
+            localParams: JSON.parse(v.globalParams),
             disabled: false
           }
         })
@@ -116,14 +139,17 @@
       // Non-null objects represent backfill
       if (!_.isEmpty(o)) {
         this.wdiCurr = o.params.processDefinitionId
+        this.localParams = o.params.localParams || []
       } else {
         if (this.processDefinitionList.length) {
-          this.wdiCurr = this.processDefinitionList[0]['id']
+          this.wdiCurr = this.processDefinitionList[0].id
+          this.localParams = this.processDefinitionList[0].localParams || []
           this.$emit('on-set-process-name', this._handleName(this.wdiCurr))
         }
       }
     },
     mounted () {
-    }
+    },
+    components: { mListBox, mLocalParams }
   }
 </script>
