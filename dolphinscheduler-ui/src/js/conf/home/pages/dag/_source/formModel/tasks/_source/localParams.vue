@@ -21,7 +21,7 @@
          :key="item.id"
          @click="_getIndex($index)">
       <x-input
-              :disabled="isDetails"
+              :disabled="isDetails || fixKeys"
               type="text"
               v-model="localParamsList[$index].prop"
               :placeholder="$t('prop(required)')"
@@ -34,7 +34,7 @@
                 style="width: 80px;"
                 @change="_handleDirectChanged"
                 v-model="localParamsList[$index].direct"
-                :disabled="isDetails">
+                :disabled="isDetails || fixKeys">
           <x-option
                   v-for="city in directList"
                   :key="city.code"
@@ -46,7 +46,7 @@
                 style="width: 118px;"
                 @change="_handleTypeChanged"
                 v-model="localParamsList[$index].type"
-                :disabled="isDetails">
+                :disabled="isDetails || fixKeys">
           <x-option
                   v-for="city in typeList"
                   :key="city.code"
@@ -64,12 +64,12 @@
               @on-blur="_handleValue()"
               :style="inputStyle">
       </x-input>
-      <span class="lt-add">
+      <span class="lt-add" v-if="!fixKeys">
         <a href="javascript:" style="color:red;" @click="!isDetails && _removeUdp($index)" >
           <em class="ans-icon-trash" :class="_isDetails" data-toggle="tooltip" :title="$t('delete')" ></em>
         </a>
       </span>
-      <span class="add" v-if="$index === (localParamsList.length - 1)">
+      <span class="add" v-if="$index === (localParamsList.length - 1) && !fixKeys">
         <a href="javascript:" @click="!isDetails && _addUdp()" >
           <em class="iconfont ans-icon-increase" :class="_isDetails" data-toggle="tooltip" :title="$t('Add')"></em>
         </a>
@@ -108,6 +108,10 @@
       hide: {
         type: Boolean,
         default: true
+      },
+      fixKeys: {
+        type: Boolean,
+        default: false
       }
     },
     methods: {
