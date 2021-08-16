@@ -73,8 +73,7 @@
     <!-- worker server logback config end -->
 
     <root level="INFO">
-        <appender-ref ref="TASKLOGFILE"/>
-        <appender-ref ref="WORKERLOGFILE"/>
+        <appender-ref ref="STDOUT"/>
     </root>
 
 </configuration>
