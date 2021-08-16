@@ -122,7 +122,7 @@ Dag.prototype.backfill = function (arg) {
       g.setNode(i, { label: i, width: Math.min(location.name.length * 7, 170), height: 150 })
     }
 
-    for (const i in store.state.dag.connects) {
+    for (let i = 0; i < store.state.dag.connects.length; i++) {
       const connect = store.state.dag.connects[i]
       g.setEdge(connect.endPointSourceId, connect.endPointTargetId)
     }

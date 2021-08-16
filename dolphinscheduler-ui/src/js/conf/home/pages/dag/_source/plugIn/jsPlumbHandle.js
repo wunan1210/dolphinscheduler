@@ -543,7 +543,9 @@ JSP.prototype.copyNodes = function ($id) {
   // Copy node information
   newNodeInfo = Object.assign(newNodeInfo, {
     id: newId,
-    name: newName
+    name: newName,
+    code: '',
+    version: 0
   })
 
   // Add new node
