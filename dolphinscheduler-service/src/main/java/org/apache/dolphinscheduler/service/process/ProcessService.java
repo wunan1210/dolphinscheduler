@@ -2269,7 +2269,8 @@ public class ProcessService {
         }
         Map<String, TaskDefinition> taskDefinitionMap = new HashMap<>();
         for (TaskNode taskNode : taskNodes) {
-            TaskDefinition taskDefinition = taskDefinitionMapper.queryByDefinitionCode(taskNode.getCode());
+            //TaskDefinition taskDefinition = taskDefinitionMapper.queryByDefinitionCode(taskNode.getCode());
+            TaskDefinition taskDefinition = taskDefinitionMapper.queryByDefinitionName(projectCode,taskNode.getName());
             if (taskDefinition == null) {
                 try {
                     long code = SnowFlakeUtils.getInstance().nextId();
