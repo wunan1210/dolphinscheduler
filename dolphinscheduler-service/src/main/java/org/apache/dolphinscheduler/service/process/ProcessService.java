@@ -952,7 +952,7 @@ public class ProcessService {
      * @param parentProcessInstance
      * @return
      */
-    private String getSubWorkFlowParam(ProcessInstanceMap instanceMap, ProcessInstance parentProcessInstance) {
+    private String getSubWorkFlowParam(ProcessInstanceMap instanceMap, ProcessInstance parentProcessInstance, Map<String, String> fatherParams) {
         // set sub work process command
         String processMapStr = JSONUtils.toJson(instanceMap);
         Map<String, String> cmdParam = JSONUtils.toMap(processMapStr);
@@ -964,7 +964,22 @@ public class ProcessService {
             cmdParam.put(CMDPARAM_COMPLEMENT_DATA_START_DATE, startTime);
             processMapStr = JSONUtils.toJson(cmdParam);
         }
+        if (fatherParams.size() != 0) {
+            // cmdParam.put(Constants.CMD_PARAM_FATHER_PARAMS, JSONUtils.toJsonString(fatherParams));
+            // processMapStr = JSONUtils.toJsonString(cmdParam);
+        }
         return processMapStr;
+    }
+
+    public Map<String, String> getGlobalParamMap(String globalParams) {
+        List<Property> propList;
+        Map<String, String> globalParamMap = new HashMap<>();
+        if (StringUtils.isNotEmpty(globalParams)) {
+            propList = JSONUtils.toList(globalParams, Property.class);
+            globalParamMap = propList.stream().collect(Collectors.toMap(Property::getProp, Property::getValue));
+        }
+
+        return globalParamMap;
     }
 
     /**
@@ -982,7 +997,22 @@ public class ProcessService {
         TaskNode taskNode = JSONUtils.parseObject(task.getTaskJson(), TaskNode.class);
         Map<String, String> subProcessParam = JSONUtils.toMap(taskNode.getParams());
         Integer childDefineId = Integer.parseInt(subProcessParam.get(Constants.CMDPARAM_SUB_PROCESS_DEFINE_ID));
-        String processParam = getSubWorkFlowParam(instanceMap, parentProcessInstance);
+
+        Object localParams = subProcessParam.get(Constants.LOCAL_PARAMS);
+        List<Property> allParam = JSONUtils.toList(JSONUtils.toJsonString(localParams), Property.class);
+        Map<String, String> globalMap = this.getGlobalParamMap(parentProcessInstance.getGlobalParams());
+        Map<String, String> fatherParams = new HashMap<>();
+        if (CollectionUtils.isNotEmpty(allParam)) {
+            for (Property info : allParam) {
+                if (globalMap.containsKey(info.getProp())) {
+                    fatherParams.put(info.getProp(), globalMap.get(info.getProp()));
+                } else {
+                    fatherParams.put(info.getProp(), ParameterUtils.convertParameterPlaceholders(info.getValue(), globalMap));
+                }
+            }
+        }
+
+        String processParam = getSubWorkFlowParam(instanceMap, parentProcessInstance, fatherParams);
 
         return new Command(
                 commandType,
