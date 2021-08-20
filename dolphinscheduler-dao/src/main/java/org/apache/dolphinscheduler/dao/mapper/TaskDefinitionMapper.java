@@ -106,4 +106,8 @@ public interface TaskDefinitionMapper extends BaseMapper<TaskDefinition> {
      * @return int
      */
     int deleteByCode(@Param("code") Long code);
+
+
+    int deleteByNameAndProjectCode(@Param("projectCode") Long projectCode,
+                                   @Param("taskDefinitionName") String name);
 }

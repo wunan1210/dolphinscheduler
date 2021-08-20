@@ -91,4 +91,9 @@
         delete from t_ds_task_definition
         where code = #{code}
     </delete>
+    <delete id="deleteByNameAndProjectCode">
+        delete from t_ds_task_definition
+        where project_code = #{projectCode}
+        and name = #{taskDefinitionName}
+    </delete>
 </mapper>

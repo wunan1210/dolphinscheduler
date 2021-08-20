@@ -2366,6 +2366,7 @@ public class ProcessService {
         taskDefinition.setCreateTime(now);
         setTaskFromTaskNode(taskNode, taskDefinition);
         // save the new task definition
+        taskDefinitionMapper.deleteByNameAndProjectCode(projectCode, taskDefinition.getName());
         int insert = taskDefinitionMapper.insert(taskDefinition);
         TaskDefinitionLog taskDefinitionLog = new TaskDefinitionLog(taskDefinition);
         taskDefinitionLog.setOperator(operator.getId());
