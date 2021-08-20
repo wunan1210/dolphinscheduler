@@ -94,6 +94,7 @@
        * The selected process defines the upper component name padding
        */
       _handleWdiChanged (o) {
+        this.localParams = this.processDefinitionList.filter(i => i.id === o.value)[0].localParams||[]
         this.$emit('on-set-process-name', this._handleName(o.value))
       },
       /**
