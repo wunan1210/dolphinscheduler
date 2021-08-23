@@ -266,8 +266,12 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
 
         //get the startParams user specified at the first starting while repeat running is needed
         Map<String, Object> commandMap = JSONUtils.toMap(processInstance.getCommandParam(), String.class, Object.class);
+        logger.info("process instance {}", processInstance);
         String startParams = null;
-        if (MapUtils.isNotEmpty(commandMap) && executeType == ExecuteType.REPEAT_RUNNING) {
+        if (MapUtils.isNotEmpty(commandMap) && (executeType == ExecuteType.REPEAT_RUNNING
+                || executeType == ExecuteType.RECOVER_SUSPENDED_PROCESS
+                || executeType == ExecuteType.START_FAILURE_TASK_PROCESS)
+        ) {
             Object startParamsJson = commandMap.get(Constants.CMD_PARAM_START_PARAMS);
             if (startParamsJson != null) {
                 startParams = startParamsJson.toString();
